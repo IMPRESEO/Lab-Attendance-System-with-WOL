@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Batch Management - Thiagarajar Polytechnic{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Thiagarajar Polytechnic College"
+                        class="h-10 w-auto mr-2 md:mr-3">
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-primary leading-tight">Batches</h1>
+                        <p class="text-[10px] text-gray-400 hidden md:block">Batch-wise Attendance</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1 md:space-x-4">
+                <a href="{{ url_for('auth.home') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Home">
+                    <i class="fas fa-home md:mr-2"></i><span class="hidden lg:inline">Home</span>
+                </a>
+                <a href="{{ url_for('management.department_management') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Departments">
+                    <i class="fas fa-university md:mr-2"></i><span class="hidden lg:inline">Departments</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center">
+                    <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Batch Management</h2>
+        <p class="text-gray-600">View batch-wise attendance statistics and student distribution</p>
+    </div>
+
+    <!-- Batch Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {% for batch in batch_stats %}
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-orange-500 rounded-lg p-3">
+                    <i class="fas fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-500">Batch {{ batch.batch_year }}</span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ batch.batch_year }}</h3>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Total Students</span>
+                    <span class="text-lg font-semibold text-primary">{{ batch.student_count }}</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Today's Attendance</span>
+                    <div class="flex items-center">
+                        <span class="text-lg font-semibold text-green-600">{{ batch.attendance_count }}</span>
+                        <span class="text-sm text-gray-500 ml-2">({{ "%.1f"|format(batch.attendance_percentage)
+                            }}%)</span>
+                    </div>
+                </div>
+
+                <!-- Attendance Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                        style="width: {{ batch.attendance_percentage }}%"></div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="{{ url_for('management.batch_details', batch_year=batch.batch_year) }}"
+                    class="w-full bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 text-center">
+                    <i class="fas fa-users mr-2"></i>View Batch Details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Batch Comparison Chart -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center mb-6">
+            <div class="bg-green-500 rounded-lg p-3 mr-4">
+                <i class="fas fa-chart-line text-white text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900">Batch Performance Comparison</h3>
+                <p class="text-sm text-gray-500">Attendance comparison across all batches</p>
+            </div>
+        </div>
+
+        <div class="h-64">
+            <canvas id="batchComparisonChart" class="w-full h-full"></canvas>
+        </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-primary">{{ batch_stats|length }}</div>
+            <div class="text-sm text-gray-600 mt-1">Active Batches</div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-green-600">{{ batch_stats|sum(attribute='student_count') }}</div>
+            <div class="text-sm text-gray-600 mt-1">Total Students</div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-blue-600">{{ batch_stats|sum(attribute='attendance_count') }}</div>
+            <div class="text-sm text-gray-600 mt-1">Today's Attendance</div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-purple-600">
+                {% set total_students = batch_stats|map(attribute='student_count')|list %}
+                {% set total_attendance = batch_stats|map(attribute='attendance_count')|list %}
+                {{ "%.1f"|format((total_attendance|sum / total_students|sum * 100) if total_students|sum > 0 else 0) }}%
+            </div>
+            <div class="text-sm text-gray-600 mt-1">Overall Attendance</div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Batch Comparison Chart
+    const ctx = document.getElementById('batchComparisonChart').getContext('2d');
+    const batchData = {{ batch_stats| tojson }};
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: batchData.map(d => d.batch_year),
+            datasets: [{
+                label: 'Total Students',
+                data: batchData.map(d => d.student_count),
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderColor: 'rgb(59, 130, 246)',
+                borderWidth: 1
+            }, {
+                label: 'Today\'s Attendance',
+                data: batchData.map(d => d.attendance_count),
+                backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                borderColor: 'rgb(34, 197, 94)',
+                borderWidth: 1
+            }, {
+                label: 'Attendance %',
+                data: batchData.map(d => d.attendance_percentage),
+                backgroundColor: 'rgba(251, 146, 60, 0.8)',
+                borderColor: 'rgb(251, 146, 60)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Auto-refresh every 30 seconds
+    setInterval(() => {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %}

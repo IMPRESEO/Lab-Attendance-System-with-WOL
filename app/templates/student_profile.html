@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student_data.student.name }} - Student Profile{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Logo" class="h-10 w-auto mr-2 md:mr-3">
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-primary leading-tight">Student Profile</h1>
+                        <p class="text-[10px] text-gray-400 hidden md:block">{{ student_data.student.name }} - {{
+                            student_data.student.reg_no }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-1 md:space-x-4">
+                    <a href="{{ url_for('profile.student_directory') }}"
+                        class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                        title="Back">
+                        <i class="fas fa-arrow-left md:mr-2"></i><span class="hidden lg:inline">Back</span>
+                    </a>
+                    <a href="{{ url_for('auth.home') }}"
+                        class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                        title="Home">
+                        <i class="fas fa-home md:mr-2"></i><span class="hidden lg:inline">Home</span>
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}"
+                        class="bg-red-500 hover:bg-red-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center">
+                        <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                    </a>
+                    </a>
+                </div>
+            </div>
+        </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Student Info Card -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div class="flex items-start space-x-6">
+            <div class="flex-shrink-0">
+                <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-3xl">{{ student_data.student.name[0]|upper }}</span>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center space-x-4 mb-4">
+                    <h2 class="text-3xl font-bold text-gray-900">{{ student_data.student.name }}</h2>
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        <i class="fas fa-graduation-cap mr-1"></i>Student
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Register Number</p>
+                        <p class="text-lg font-semibold text-gray-900 font-mono">{{ student_data.student.reg_no }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Department</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            {% if student_data.student.department %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-purple-100 text-purple-800">
+                                {{ student_data.student.department }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400">Not assigned</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Batch Year</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            {% if student_data.student.batch_year %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-orange-100 text-orange-800">
+                                {{ student_data.student.batch_year }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400">Not assigned</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Fingerprint ID</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            {% if student_data.student.finger_id %}
+                            <span class="text-green-600">#{{ student_data.student.finger_id }}</span>
+                            {% else %}
+                            <span class="text-gray-400">Not enrolled</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">MAC Address</p>
+                        <p class="text-lg font-semibold text-gray-900 font-mono">
+                            {% if student_data.student.mac_address %}
+                            <span class="text-blue-600">{{ student_data.student.mac_address }}</span>
+                            {% else %}
+                            <span class="text-gray-400">Not assigned</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+            <div class="flex items-center">
+                <div class="bg-blue-500 rounded-lg p-3 mr-4">
+                    <i class="fas fa-calendar-check text-white text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Sessions</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ student_data.stats.total_sessions }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+            <div class="flex items-center">
+                <div class="bg-green-500 rounded-lg p-3 mr-4">
+                    <i class="fas fa-calendar-day text-white text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Today</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ student_data.stats.today_sessions }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+            <div class="flex items-center">
+                <div class="bg-purple-500 rounded-lg p-3 mr-4">
+                    <i class="fas fa-calendar-week text-white text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">This Week</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ student_data.stats.weekly_sessions }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+            <div class="flex items-center">
+                <div class="bg-orange-500 rounded-lg p-3 mr-4">
+                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">This Month</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ student_data.stats.monthly_sessions }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance History -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-primary to-primary-dark px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-2 mr-3">
+                        <i class="fas fa-history text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white">Attendance History</h3>
+                </div>
+                <div class="bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                    <span class="text-white text-sm font-medium">Last 50 Records</span>
+                </div>
+            </div>
+        </div>
+
+        {% if student_data.attendance_history %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for record in student_data.attendance_history %}
+                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ record.timestamp.split(' ')[0] }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ record.timestamp.split(' ')[1] }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>{{ record.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% set date_obj = record.timestamp.split(' ')[0] %}
+                            {% set weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+                            'Sunday'] %}
+                            {% if date_obj %}
+                            {% set weekday = weekdays[loop.index0 % 7] %}
+                            {{ weekday }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-calendar-times text-gray-400 text-2xl"></i>
+            </div>
+            <p class="text-gray-500 text-lg">No attendance records</p>
+            <p class="text-gray-400 text-sm mt-2">This student hasn't attended any sessions yet</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Monthly Pattern -->
+    {% if student_data.monthly_pattern %}
+    <div class="bg-white rounded-xl shadow-lg p-6 mt-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-purple-500 rounded-lg p-3 mr-4">
+                <i class="fas fa-chart-bar text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900">Monthly Attendance Pattern</h3>
+        </div>
+
+        <div class="space-y-4">
+            {% for month in student_data.monthly_pattern %}
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-4">
+                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                    <div>
+                        <p class="font-medium text-gray-900">{{ month.month }}</p>
+                        <p class="text-sm text-gray-500">{{ month.days_present }} days present</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-lg font-semibold text-purple-600">{{ month.count }}</p>
+                        <p class="text-xs text-gray-500">sessions</p>
+                    </div>
+                    <div class="w-32 bg-gray-200 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full"
+                            style="width: {{ (month.count / student_data.stats.total_sessions * 100) if student_data.stats.total_sessions > 0 else 0 }}%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

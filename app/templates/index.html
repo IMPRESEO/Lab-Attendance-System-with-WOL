@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Thiagarajar Polytechnic{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Thiagarajar Polytechnic College"
+                        class="h-10 w-auto mr-2 md:mr-3">
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-primary leading-tight">Thiagarajar Polytechnic</h1>
+                        <p class="text-[10px] text-gray-400 hidden md:block">AI & ML Lab Management System</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1 md:space-x-4">
+                <div class="hidden sm:flex items-center space-x-2 md:space-x-3 mr-2 md:mr-4">
+                    <div class="text-right hidden md:block">
+                        <p class="text-xs md:text-sm font-medium text-gray-900">{{ username }}</p>
+                        <p class="text-[10px] text-gray-500">{{ role.upper() }}</p>
+                    </div>
+                    <div class="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
+                        <span class="text-white font-medium text-xs">{{ username[0]|upper }}</span>
+                    </div>
+                </div>
+                {% if role in ['admin', 'hod', 'staff'] %}
+                <a href="{{ url_for('management.department_management') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Departments">
+                    <i class="fas fa-university md:mr-2"></i><span class="hidden lg:inline">Departments</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('management.batch_management') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Batches">
+                    <i class="fas fa-graduation-cap md:mr-2"></i><span class="hidden lg:inline">Batches</span>
+                </a>
+                {% if role in ['admin', 'hod'] %}
+                <a href="{{ url_for('dashboard.dashboard') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Dashboard">
+                    <i class="fas fa-tachometer-alt md:mr-2"></i><span class="hidden lg:inline">Dashboard</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('analytics.analytics') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Analytics">
+                    <i class="fas fa-chart-line md:mr-2"></i><span class="hidden lg:inline">Analytics</span>
+                </a>
+                <a href="{{ url_for('profile.student_directory') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Students">
+                    <i class="fas fa-users md:mr-2"></i><span class="hidden lg:inline">Students</span>
+                </a>
+                <a href="{{ url_for('reports.attendance_report') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Reports">
+                    <i class="fas fa-chart-bar md:mr-2"></i><span class="hidden lg:inline">Reports</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center">
+                    <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Welcome Banner -->
+<div class="bg-gradient-to-r from-primary to-primary-dark py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-white mb-4">Welcome to Thiagarajar Polytechnic College</h2>
+        <p class="text-blue-100 text-lg">Smart Biometric Attendance & Lab Automation System</p>
+    </div>
+</div>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {% if wake_msg %}
+    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg mb-6 animate-slide-in">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-green-500"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-green-700">{{ wake_msg }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Welcome Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="bg-primary rounded-lg p-3 mr-4">
+                        <i class="fas fa-user text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">Welcome, {{ username }}!</h3>
+                        <p class="text-sm text-gray-500">Logged in as <strong>{{ role.upper() }}</strong></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-primary">{{ total_users }}</div>
+                        <div class="text-xs text-gray-600 mt-1">Total Users</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600">{{ today_attendance }}</div>
+                        <div class="text-xs text-gray-600 mt-1">Today's Attendance</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-primary to-primary-dark px-6 py-4">
+                    <div class="flex items-center">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-2 mr-3">
+                            <i class="fas fa-history text-white text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white">Recent Activity</h3>
+                    </div>
+                </div>
+
+                {% if recent_logs %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Name</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Register No</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Timestamp</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for log in recent_logs %}
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="flex-shrink-0 h-8 w-8 bg-primary rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-white font-medium text-xs">{{ log.name[0]|upper }}</span>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">{{ log.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{{ log.reg_no }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ log.timestamp }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-check-circle mr-1"></i>{{ log.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-12 text-center">
+                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                    </div>
+                    <p class="text-gray-500 text-lg">No recent activity</p>
+                    <p class="text-gray-400 text-sm mt-2">Check back later for attendance updates</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

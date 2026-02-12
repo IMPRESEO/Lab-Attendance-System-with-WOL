@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Thiagarajar Polytechnic{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: {
+                        'xs': '480px',
+                    },
+                    colors: {
+                        primary: '#001f3f',
+                        'primary-dark': '#003366',
+                        'primary-light': '#004d99',
+                        success: '#4caf50',
+                        danger: '#dc3545',
+                        warning: '#f44336',
+                        info: '#2196f3',
+                        cyan: '#00bcd4'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-styles.css') }}">
+    <style>
+        /* Ensure primary colors work correctly */
+        .text-primary {
+            color: #001f3f !important;
+        }
+
+        .bg-primary {
+            background-color: #001f3f !important;
+        }
+
+        .bg-primary-dark {
+            background-color: #003366 !important;
+        }
+
+        .hover\:bg-primary:hover {
+            background-color: #001f3f !important;
+        }
+
+        .hover\:bg-primary-dark:hover {
+            background-color: #003366 !important;
+        }
+
+        .border-primary {
+            border-color: #001f3f !important;
+        }
+
+        .ring-primary {
+            --tw-ring-color: #001f3f !important;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}bg-gray-50{% endblock %}">
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

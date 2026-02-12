@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Department Management - Thiagarajar Polytechnic{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Thiagarajar Polytechnic College"
+                        class="h-10 w-auto mr-2 md:mr-3">
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-primary leading-tight">Departments</h1>
+                        <p class="text-[10px] text-gray-400 hidden md:block">Department-wise Management</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1 md:space-x-4">
+                <a href="{{ url_for('auth.home') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Home">
+                    <i class="fas fa-home md:mr-2"></i><span class="hidden lg:inline">Home</span>
+                </a>
+                <a href="{{ url_for('management.batch_management') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Batches">
+                    <i class="fas fa-users md:mr-2"></i><span class="hidden lg:inline">Batches</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center">
+                    <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Department Management</h2>
+            <p class="text-gray-600">View department-wise statistics and student distribution</p>
+        </div>
+        {% if role == 'admin' %}
+        <a href="{{ url_for('management.add_department') }}"
+            class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 flex items-center justify-center shadow-lg">
+            <i class="fas fa-plus-circle mr-2"></i>Add New Department
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Department Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {% for department in departments %}
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+                <div class="bg-purple-500 rounded-lg p-3">
+                    <i class="fas fa-university text-white text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-500">{{ department.name }}</span>
+            </div>
+
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ department.name }}</h3>
+            <p class="text-sm text-gray-600 mb-4">{{ department.description }}</p>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">HOD</span>
+                    <span class="text-sm font-medium text-gray-900">{{ department.hod_name }}</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Total Students</span>
+                    <span class="text-lg font-semibold text-primary">{{ department_stats[department.name].student_count
+                        }}</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Today's Attendance</span>
+                    <div class="flex items-center">
+                        <span class="text-lg font-semibold text-green-600">{{
+                            department_stats[department.name].attendance_count }}</span>
+                        <span class="text-sm text-gray-500 ml-2">({{
+                            "%.1f"|format(department_stats[department.name].attendance_percentage) }}%)</span>
+                    </div>
+                </div>
+
+                <!-- Attendance Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full transition-all duration-300"
+                        style="width: {{ department_stats[department.name].attendance_percentage }}%"></div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex flex-wrap gap-2">
+                <a href="{{ url_for('management.department_details', department_name=department.name) }}"
+                    class="flex-1 bg-primary hover:bg-primary-dark text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 text-center flex items-center justify-center">
+                    <i class="fas fa-eye mr-2"></i>Details
+                </a>
+                {% if role == 'admin' %}
+                <a href="{{ url_for('management.edit_department', department_name=department.name) }}"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center"
+                    title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <button onclick="confirmDeleteDepartment('{{ department.name }}')"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center"
+                    title="Delete">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                {% endif %}
+                <button onclick="refreshDepartmentStats('{{ department.name }}')"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center"
+                    title="Refresh">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center mb-6">
+            <div class="bg-blue-500 rounded-lg p-3 mr-4">
+                <i class="fas fa-chart-pie text-white text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900">Overall Statistics</h3>
+                <p class="text-sm text-gray-500">Department-wise summary</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-primary">{{ departments|length }}</div>
+                <div class="text-sm text-gray-600 mt-1">Total Departments</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-green-600">{{
+                    department_stats.values()|sum(attribute='student_count') }}</div>
+                <div class="text-sm text-gray-600 mt-1">Total Students</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600">
+                    {% set total_attendance = department_stats.values()|map(attribute='attendance_count')|list %}
+                    {{ total_attendance|sum }}
+                </div>
+                <div class="text-sm text-gray-600 mt-1">Today's Attendance</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-purple-600">
+                    {% set total_students = department_stats.values()|map(attribute='student_count')|list %}
+                    {% set total_attendance = department_stats.values()|map(attribute='attendance_count')|list %}
+                    {{ "%.1f"|format((total_attendance|sum / total_students|sum * 100) if total_students|sum > 0 else 0)
+                    }}%
+                </div>
+                <div class="text-sm text-gray-600 mt-1">Overall Attendance</div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDeleteDepartment(departmentName) {
+        if (confirm(`Are you sure you want to delete the department "${departmentName}"? This action cannot be undone and will fail if there are active students.`)) {
+            fetch(`/department/delete/${encodeURIComponent(departmentName)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message || 'Department deleted successfully');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + (data.error || 'Unknown error occurred'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the department');
+                });
+        }
+    }
+
+    function refreshDepartmentStats(departmentName) {
+        fetch(`/api/department-stats/${encodeURIComponent(departmentName)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    return;
+                }
+
+                // Update the UI with new stats
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error refreshing stats:', error);
+            });
+    }
+
+    // Auto-refresh every 30 seconds
+    setInterval(() => {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %}

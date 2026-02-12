@@ -1,0 +1,525 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Thiagarajar Polytechnic{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Thiagarajar Polytechnic College"
+                        class="h-10 w-auto mr-2 md:mr-3">
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-primary leading-tight">Admin Dashboard</h1>
+                        <p class="text-[10px] text-gray-400 hidden md:block">Thiagarajar Polytechnic College</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1 md:space-x-4">
+                <a href="{{ url_for('auth.home') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Home">
+                    <i class="fas fa-home md:mr-2"></i><span class="hidden lg:inline">Home</span>
+                </a>
+                <a href="{{ url_for('management.department_management') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Departments">
+                    <i class="fas fa-university md:mr-2"></i><span class="hidden lg:inline">Departments</span>
+                </a>
+                <a href="{{ url_for('management.batch_management') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Batches">
+                    <i class="fas fa-calendar-alt md:mr-2"></i><span class="hidden lg:inline">Batches</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center">
+                    <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8 flex justify-between items-end">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">User Management</h2>
+            <p class="text-gray-600">Manage students, staff, and system administrators</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ url_for('reports.attendance_report') }}"
+                class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm flex items-center">
+                <i class="fas fa-file-alt mr-2"></i>Full Reports
+            </a>
+            <a href="{{ url_for('reports.download_excel') }}"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm flex items-center">
+                <i class="fas fa-file-excel mr-2"></i>Export Excel
+            </a>
+        </div>
+    </div>
+
+    {% if role == 'admin' %}
+    <!-- Enhanced Add User Form -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8 card-hover border border-gray-100">
+        <div class="flex items-center mb-6">
+            <div class="bg-primary rounded-lg p-3 mr-4">
+                <i class="fas fa-user-plus text-white text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900">Add New Member</h3>
+                <p class="text-sm text-gray-500">Register with department and academic details</p>
+            </div>
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-6">
+            <div class="flex items-center">
+                <i class="fas fa-lightbulb text-blue-500 mr-3"></i>
+                <div>
+                    <p class="text-sm font-medium text-blue-800">Next available Finger ID: <span class="font-bold">{{
+                            next_finger_id }}</span></p>
+                    <p class="text-xs text-blue-600">(assigned during enrollment)</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="addUserForm" class="space-y-6">
+            <!-- Basic Information -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
+                    Step 1: Basic Information</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input type="text" name="name" id="userName" required placeholder="Full Name"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Register Number</label>
+                        <input type="text" name="reg_no" id="userRegNo" required placeholder="Register No"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                        <select name="role" id="userRole" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                            <option value="student">Student</option>
+                            <option value="staff">Staff</option>
+                            <option value="hod">HOD</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div id="passwordContainer">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" name="password" id="userPassword" required placeholder="Login password"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                        <p class="text-[10px] text-gray-400 mt-1" id="passwordHint">(Required for staff/admin roles)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Information -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="text-sm font-bold text-primary uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
+                    Step 2: Academic Assignment</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                        <select name="department" id="departmentSelect" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                            <option value="">Select Department</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.name }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Batch Year (Optional)</label>
+                        <input type="text" name="batch_year" id="userBatch" placeholder="e.g., 2023-26"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Profile Photo (Professional)</label>
+                        <input type="file" name="photo" id="userPhoto" accept="image/*"
+                            class="w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enrollment Option -->
+            <div class="bg-blue-50 p-4 rounded-lg flex items-center justify-between">
+                <div class="flex items-center">
+                    <input type="checkbox" id="enrollNow" value="true"
+                        class="h-5 w-5 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer">
+                    <label for="enrollNow" class="ml-3 block text-sm text-blue-900 font-bold cursor-pointer">
+                        <i class="fas fa-fingerprint mr-2 text-primary"></i>Start Biometric Enrollment immediately after
+                        adding
+                    </label>
+                </div>
+                <div class="text-[10px] text-blue-600 font-medium hidden md:block italic">
+                    (Opens the enrollment modal instantly)
+                </div>
+            </div>
+
+            <button type="submit"
+                class="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-lg font-bold transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
+                <i class="fas fa-plus-circle mr-2"></i>Add to System
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Enhanced Users Table -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div
+            class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <h3 class="text-lg font-bold text-gray-800">
+                <i class="fas fa-list-ul mr-2 text-primary"></i>All System Users
+            </h3>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="userSearch" placeholder="Search name/reg no" onkeyup="filterUsers()"
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary">
+                </div>
+                <select id="departmentFilter" onchange="filterUsers()"
+                    class="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept.name }}">{{ dept.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">User Info</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Academic</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Biometric/HW</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for user in users %}
+                    <tr class="hover:bg-blue-50 transition-colors user-row"
+                        data-department="{{ user.department or '' }}" data-role="{{ user.role }}"
+                        data-name="{{ user.name|lower }}" data-reg-no="{{ user.reg_no|lower }}">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                {% if user.photo_path %}
+                                <img src="{{ url_for('static', filename=user.photo_path) }}"
+                                    class="h-10 w-10 flex-shrink-0 rounded-full object-cover border-2 border-primary shadow-sm"
+                                    alt="{{ user.name }}">
+                                {% else %}
+                                <div
+                                    class="h-10 w-10 flex-shrink-0 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                                    {{ user.name[0]|upper }}
+                                </div>
+                                {% endif %}
+                                <div class="ml-4">
+                                    <div class="text-sm font-bold text-gray-900">{{ user.name }}</div>
+                                    <div class="text-xs text-gray-500 font-mono">{{ user.reg_no }}</div>
+                                    <div class="mt-1">
+                                        {% if user.role == 'admin' %}
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 uppercase">Admin</span>
+                                        {% elif user.role == 'hod' %}
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-800 uppercase">HOD</span>
+                                        {% elif user.role == 'staff' %}
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 uppercase">Staff</span>
+                                        {% else %}
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 uppercase">Student</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-xs font-medium text-gray-500 mb-1 uppercase tracking-tight">Department
+                            </div>
+                            <div class="text-sm text-gray-900">{{ user.department or 'None' }}</div>
+                            <div class="flex gap-2 mt-1">
+                                {% if user.batch_year %}
+                                <span
+                                    class="text-[10px] font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">Batch:
+                                    {{ user.batch_year }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="text-xs font-bold text-gray-400 w-16">Finger:</span>
+                                    {% if user.finger_id %}
+                                    <span class="text-sm font-mono text-primary font-bold">#{{ user.finger_id }}</span>
+                                    {% else %}
+                                    <span class="text-xs text-gray-400 italic">Unenrolled</span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-xs font-bold text-gray-400 w-16">MAC:</span>
+                                    {% if role == 'admin' %}
+                                    <form method="POST" action="{{ url_for('dashboard.update_mac') }}"
+                                        class="flex items-center space-x-1">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <input type="text" name="mac_address" value="{{ user.mac_address or '' }}"
+                                            class="w-32 px-2 py-0.5 text-xs border border-gray-300 rounded font-mono focus:ring-1 focus:ring-primary">
+                                        <button type="submit" class="text-blue-500 hover:text-blue-700 p-1"><i
+                                                class="fas fa-save text-[10px]"></i></button>
+                                    </form>
+                                    {% else %}
+                                    <span class="text-xs font-mono text-gray-600">{{ user.mac_address or 'Not set'
+                                        }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end space-x-1">
+                                {% if role == 'admin' %}
+                                <a href="{{ url_for('management.edit_user', user_id=user.id) }}"
+                                    class="p-2 text-indigo-500 hover:bg-hover rounded-lg transition-colors"
+                                    title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% if not user.finger_id %}
+                                <a href="{{ url_for('hardware.activate_enroll', finger_id=next_finger_id) }}"
+                                    class="p-2 text-yellow-500 hover:bg-hover rounded-lg transition-colors"
+                                    title="Enroll Fingerprint">
+                                    <i class="fas fa-fingerprint"></i>
+                                </a>
+                                {% else %}
+                                <a href="{{ url_for('dashboard.delete_fingerprint', user_id=user.id) }}"
+                                    class="p-2 text-orange-500 hover:bg-hover rounded-lg transition-colors"
+                                    onclick="return confirm('Clear fingerprint data?')" title="Delete Fingerprint">
+                                    <i class="fas fa-fingerprint-slash"></i>
+                                </a>
+                                {% endif %}
+                                <a href="{{ url_for('dashboard.delete_user_route', user_id=user.id) }}"
+                                    class="p-2 text-red-500 hover:bg-hover rounded-lg transition-colors"
+                                    onclick="return confirm('Permanently delete user?')" title="Delete User">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- Enrollment Modal -->
+<div id="enrollmentModal" class="fixed inset-0 z-50 flex items-center justify-center" style="display: none;">
+    <div class="absolute inset-0 bg-black bg-opacity-70 backdrop-filter backdrop-blur-sm"></div>
+    <div
+        class="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all duration-300">
+        <div class="flex flex-col items-center">
+            <div id="enrollmentIcon" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 bg-primary">
+                <i class="fas fa-fingerprint text-white text-5xl"></i>
+            </div>
+            <h2 id="enrollmentTitle" class="text-2xl font-bold text-primary mb-3 text-center">Biometric Enrollment</h2>
+            <p id="enrollmentMessage" class="text-gray-600 text-center mb-4">Initializing sensor connection...</p>
+
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
+                <div id="progressBar" class="bg-primary h-full rounded-full transition-all duration-300"
+                    style="width: 0%;"></div>
+            </div>
+
+            <p id="enrollmentFingerId" class="text-sm font-mono text-gray-500 mb-6"></p>
+
+            <button onclick="cancelEnrollment()" id="cancelBtn"
+                class="bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-bold transition-all">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    // Integrated User Addition (Handling Photo Upload)
+    document.getElementById('addUserForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        // Professional UI loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding User...';
+
+        const enrollNow = document.getElementById('enrollNow').checked;
+        formData.append('enroll_now', enrollNow);
+
+        fetch("{{ url_for('dashboard.add_student_enhanced_route') }}", {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    if (res.enroll_now && res.finger_id) {
+                        // Reset form and show success flash temporarily
+                        this.reset();
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnHtml;
+
+                        // Open enrollment modal instantly
+                        showEnrollmentModal(res.finger_id);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    // Show specific error in a more prominent way
+                    const errorContainer = document.createElement('div');
+                    errorContainer.className = 'mt-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 animate-slide-in';
+                    errorContainer.innerHTML = `<div class="flex items-center"><i class="fas fa-exclamation-triangle mr-2"></i><span>${res.error || 'Failed to add user'}</span></div>`;
+
+                    const form = document.getElementById('addUserForm');
+                    const existingError = form.querySelector('.bg-red-100');
+                    if (existingError) existingError.remove();
+
+                    form.insertBefore(errorContainer, form.firstChild);
+
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('An error occurred while adding the user');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            });
+    });
+
+    // Enrollment Polling Logic
+    let enrollmentPolling = null;
+    let isEnrolling = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch("{{ url_for('hardware.get_enrollment_status') }}")
+            .then(r => r.json())
+            .then(data => {
+                if (data.status !== 'idle' && data.status !== 'success' && data.status !== 'failed') {
+                    showEnrollmentModal(data.finger_id);
+                }
+            });
+    });
+
+    function showEnrollmentModal(fingerId) {
+        document.getElementById('enrollmentModal').style.display = 'flex';
+        document.getElementById('enrollmentFingerId').textContent = 'FINGER PRINT ID: #' + fingerId;
+        isEnrolling = true;
+        startPolling();
+    }
+
+    function startPolling() {
+        if (enrollmentPolling) return;
+        enrollmentPolling = setInterval(() => {
+            fetch("{{ url_for('hardware.get_enrollment_status') }}")
+                .then(r => r.json())
+                .then(updateEnrollmentUI)
+                .catch(console.error);
+        }, 800);
+    }
+
+    function updateEnrollmentUI(data) {
+        const msg = document.getElementById('enrollmentMessage');
+        const progress = document.getElementById('progressBar');
+        const title = document.getElementById('enrollmentTitle');
+
+        msg.textContent = data.message;
+
+        const states = {
+            'pending': 10, 'started': 20, 'waiting_finger_1': 30, 'got_finger_1': 50,
+            'remove_finger': 60, 'waiting_finger_2': 75, 'got_finger_2': 90, 'success': 100
+        };
+
+        progress.style.width = (states[data.status] || 0) + '%';
+
+        if (data.status === 'success') {
+            title.textContent = '✅ Fingerprint Added Successfully!';
+            title.className = 'text-2xl font-bold text-green-500 mb-3 text-center';
+            document.getElementById('enrollmentIcon').className = 'w-24 h-24 rounded-full flex items-center justify-center mb-6 bg-green-500';
+            document.getElementById('cancelBtn').textContent = 'Close';
+            document.getElementById('cancelBtn').className = 'bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded-lg font-bold';
+            
+            // Stop polling
+            if (enrollmentPolling) {
+                clearInterval(enrollmentPolling);
+                enrollmentPolling = null;
+            }
+            isEnrolling = false;
+            
+            // Show success message for 2 seconds then close modal and reload
+            setTimeout(() => {
+                document.getElementById('enrollmentModal').style.display = 'none';
+                location.reload();
+            }, 2000);
+        } else if (data.status === 'failed') {
+            title.textContent = 'Error';
+            title.className = 'text-2xl font-bold text-red-500 mb-3 text-center';
+            document.getElementById('cancelBtn').textContent = 'Close';
+        }
+    }
+
+    function cancelEnrollment() {
+        fetch("{{ url_for('hardware.cancel_enroll') }}").then(() => location.reload());
+    }
+
+    // Filter Functionality
+    function filterUsers() {
+        const dept = document.getElementById('departmentFilter').value.toLowerCase();
+        const search = document.getElementById('userSearch').value.toLowerCase();
+
+        document.querySelectorAll('.user-row').forEach(row => {
+            const rowDept = row.dataset.department.toLowerCase();
+            const rowName = row.dataset.name;
+            const rowReg = row.dataset.regNo;
+
+            const matchDept = !dept || rowDept === dept;
+            const matchSearch = !search || rowName.includes(search) || rowReg.includes(search);
+
+            row.style.display = (matchDept && matchSearch) ? '' : 'none';
+        });
+    }
+    // Role-based password field visibility
+    const roleSelect = document.getElementById('userRole');
+    const passwordInput = document.getElementById('userPassword');
+    const passwordContainer = document.getElementById('passwordContainer');
+    const passwordHint = document.getElementById('passwordHint');
+
+    function togglePasswordField() {
+        if (roleSelect.value === 'student') {
+            passwordInput.required = false;
+            passwordInput.placeholder = "Optional for students";
+            passwordHint.textContent = "(Login password - optional for students)";
+            passwordHint.className = "text-[10px] text-blue-500 mt-1";
+        } else {
+            passwordInput.required = true;
+            passwordInput.placeholder = "Required for staff/admin";
+            passwordHint.textContent = "(Required for staff/admin roles)";
+            passwordHint.className = "text-[10px] text-red-500 mt-1";
+        }
+    }
+
+    roleSelect.addEventListener('change', togglePasswordField);
+    togglePasswordField(); // Run on init
+</script>
+{% endblock %}

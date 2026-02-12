@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Department - Thiagarajar Polytechnic{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Thiagarajar Polytechnic College"
+                        class="h-10 w-auto mr-3">
+                    <div>
+                        <h1 class="text-xl font-bold text-primary">Edit Department</h1>
+                        <p class="text-xs text-gray-500">Update department information</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('management.department_management') }}"
+                    class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Departments
+                </a>
+                <a href="{{ url_for('auth.home') }}"
+                    class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                    <i class="fas fa-home mr-2"></i>Home
+                </a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Edit Department</h2>
+        <p class="text-gray-600">Update department information and settings</p>
+    </div>
+
+    <!-- Edit Department Form -->
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <form method="POST">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-university mr-2 text-primary"></i>Department Name
+                    </label>
+                    <input type="text" name="name" required value="{{ department.name }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user-tie mr-2 text-primary"></i>HOD Name
+                    </label>
+                    <input type="text" name="hod_name" required value="{{ department.hod_name }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-info-circle mr-2 text-primary"></i>Description
+                </label>
+                <textarea name="description" rows="4"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                    placeholder="Enter department description...">{{ department.description or '' }}</textarea>
+            </div>
+
+            <div class="flex items-center justify-between mt-6">
+                <div>
+                    <button type="button" onclick="confirmDeleteDepartment('{{ department.name }}')"
+                        class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200">
+                        <i class="fas fa-trash-alt mr-2"></i>Delete Department
+                    </button>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('management.department_management') }}"
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </a>
+                    <button type="submit"
+                        class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                        <i class="fas fa-save mr-2"></i>Update Department
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Department Info -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mt-8">
+        <div class="flex items-start space-x-6">
+            <div class="flex-shrink-0">
+                <div class="w-20 h-20 bg-purple-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-university text-white text-2xl"></i>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center space-x-4 mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">{{ department.name }}</h2>
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                        <i class="fas fa-university mr-1"></i>Department
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">HOD</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ department.hod_name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Created</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ department.created_at.split(' ')[0] }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Updated</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ department.updated_at.split(' ')[0] if
+                            department.updated_at else 'Not yet' }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <p class="text-sm text-gray-600 mb-2">{{ department.description or 'No description available' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDeleteDepartment(departmentName) {
+        if (confirm(`Are you sure you want to delete the department "${departmentName}"? This action cannot be undone and will fail if there are active students.`)) {
+            fetch(`/department/delete/${encodeURIComponent(departmentName)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message || 'Department deleted successfully');
+                        window.location.href = "{{ url_for('management.department_management') }}";
+                    } else {
+                        alert('Error: ' + (data.error || 'Unknown error occurred'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the department');
+                });
+        }
+    }
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const nameInput = document.querySelector('input[name="name"]');
+        const hodNameInput = document.querySelector('input[name="hod_name"]');
+
+        if (!nameInput.value.trim()) {
+            e.preventDefault();
+            alert('Please enter a department name');
+            nameInput.focus();
+            return false;
+        }
+
+        if (!hodNameInput.value.trim()) {
+            e.preventDefault();
+            alert('Please enter HOD name');
+            hodNameInput.focus();
+            return false;
+        }
+    });
+</script>
+{% endblock %}

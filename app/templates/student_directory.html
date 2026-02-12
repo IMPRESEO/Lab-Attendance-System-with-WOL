@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}Student Directory - Thiagarajar Polytechnic{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Logo" class="h-10 w-auto mr-2 md:mr-3">
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-primary leading-tight">Students</h1>
+                        <p class="text-[10px] text-gray-400 hidden md:block">Student Directory</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1 md:space-x-4">
+                <a href="{{ url_for('auth.home') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Home">
+                    <i class="fas fa-home md:mr-2"></i><span class="hidden lg:inline">Home</span>
+                </a>
+                {% if role in ['admin', 'hod'] %}
+                <a href="{{ url_for('dashboard.dashboard') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Dashboard">
+                    <i class="fas fa-tachometer-alt md:mr-2"></i><span class="hidden lg:inline">Dashboard</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('analytics.analytics') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Analytics">
+                    <i class="fas fa-chart-line md:mr-2"></i><span class="hidden lg:inline">Analytics</span>
+                </a>
+                <a href="{{ url_for('reports.attendance_report') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Reports">
+                    <i class="fas fa-chart-bar md:mr-2"></i><span class="hidden lg:inline">Reports</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center">
+                    <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Student Directory</h2>
+        <p class="text-gray-600">Find and view student profiles and attendance history</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center space-x-4">
+            <div class="flex-1 relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" id="studentSearch" placeholder="Search by name or register number..."
+                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+            </div>
+            <button onclick="clearSearch()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200">
+                <i class="fas fa-times mr-2"></i>Clear
+            </button>
+        </div>
+
+        <!-- Search Results -->
+        <div id="searchResults" class="mt-4 hidden">
+            <div class="border-t pt-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-3">Search Results</h3>
+                <div id="resultsList" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Students Grid -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-primary to-primary-dark px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-2 mr-3">
+                        <i class="fas fa-graduation-cap text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white">All Students ({{ students|length }})</h3>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select id="departmentFilter" onchange="filterStudents()"
+                        class="px-3 py-1 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                        <option value="">All Departments</option>
+                        {% set departments = [] %}
+                        {% for student in students %}
+                        {% if student.department and student.department not in departments %}
+                        {% set _ = departments.append(student.department) %}
+                        {% endif %}
+                        {% endfor %}
+                        {% for dept in departments %}
+                        <option value="{{ dept }}">{{ dept }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="batchFilter" onchange="filterStudents()"
+                        class="px-3 py-1 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                        <option value="">All Batches</option>
+                        {% set batches = [] %}
+                        {% for student in students %}
+                        {% if student.batch_year and student.batch_year not in batches %}
+                        {% set _ = batches.append(student.batch_year) %}
+                        {% endif %}
+                        {% endfor %}
+                        {% for batch in batches %}
+                        <option value="{{ batch }}">{{ batch }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                        <span class="text-white text-sm font-medium">{{ students|length }} Registered</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Student</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Register No</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Department</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Finger ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MAC
+                            Address</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for student in students %}
+                    <tr class="hover:bg-gray-50 transition-colors duration-150 student-row"
+                        data-department="{{ student.department or '' }}" data-batch="{{ student.batch_year or '' }}"
+                        data-name="{{ student.name|lower }}" data-reg-no="{{ student.reg_no|lower }}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div
+                                    class="flex-shrink-0 h-12 w-12 bg-primary rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-white font-medium text-lg">{{ student.name[0]|upper }}</span>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ student.name }}</div>
+                                    <div class="text-sm text-gray-500">Student</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{{ student.reg_no }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if student.department %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-purple-100 text-purple-800">
+                                {{ student.department }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400 text-sm">Not assigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if student.batch_year %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-orange-100 text-orange-800">
+                                {{ student.batch_year }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400 text-sm">Not assigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if student.finger_id %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-fingerprint mr-2 text-green-600"></i>#{{ student.finger_id }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400 text-sm">Not enrolled</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if student.mac_address %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-mono bg-blue-100 text-blue-800">
+                                <i class="fas fa-network-wired mr-2 text-blue-600"></i>{{ student.mac_address }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400 text-sm">Not assigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if student.finger_id and student.mac_address %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>Active
+                            </span>
+                            {% elif student.finger_id %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>Partial
+                            </span>
+                            {% else %}
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                <i class="fas fa-clock mr-1"></i>Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{{ url_for('profile.student_profile', reg_no=student.reg_no) }}"
+                                class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105">
+                                <i class="fas fa-user mr-2"></i>View Profile
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let searchTimeout;
+
+    // Search functionality
+    document.getElementById('studentSearch').addEventListener('input', function (e) {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+
+        if (query.length < 2) {
+            hideSearchResults();
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            performSearch(query);
+        }, 300);
+    });
+
+    function performSearch(query) {
+        fetch(`/search-students?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displaySearchResults(data);
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+            });
+    }
+
+    function displaySearchResults(students) {
+        const resultsDiv = document.getElementById('searchResults');
+        const resultsList = document.getElementById('resultsList');
+
+        if (students.length === 0) {
+            resultsList.innerHTML = '<p class="text-gray-500 text-sm">No students found</p>';
+        } else {
+            resultsList.innerHTML = students.map(student => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                     onclick="window.location.href='/profile/${student.reg_no}'">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-3">
+                            <span class="text-white font-medium text-xs">${student.name[0].toUpperCase()}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">${student.name}</div>
+                            <div class="text-xs text-gray-500">${student.reg_no}</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            `).join('');
+        }
+
+        resultsDiv.classList.remove('hidden');
+    }
+
+    function hideSearchResults() {
+        document.getElementById('searchResults').classList.add('hidden');
+    }
+
+    function clearSearch() {
+        document.getElementById('studentSearch').value = '';
+        hideSearchResults();
+    }
+
+    function filterStudents() {
+        const departmentFilter = document.getElementById('departmentFilter').value;
+        const batchFilter = document.getElementById('batchFilter').value;
+        const searchValue = document.getElementById('studentSearch').value.toLowerCase();
+        const rows = document.querySelectorAll('.student-row');
+
+        rows.forEach(row => {
+            const department = row.dataset.department.toLowerCase();
+            const batch = row.dataset.batch.toLowerCase();
+            const name = row.dataset.name;
+            const regNo = row.dataset.regNo;
+
+            const matchesDepartment = departmentFilter === '' || department === departmentFilter.toLowerCase();
+            const matchesBatch = batchFilter === '' || batch === batchFilter.toLowerCase();
+            const matchesSearch = searchValue === '' ||
+                name.includes(searchValue) ||
+                regNo.includes(searchValue);
+
+            row.style.display = matchesDepartment && matchesBatch && matchesSearch ? '' : 'none';
+        });
+    }
+
+    // Add search functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('studentSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', filterStudents);
+        }
+    });
+</script>
+{% endblock %}

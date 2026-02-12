@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Search - Thiagarajar Polytechnic{% endblock %}
+
+{% block content %}
+<!-- Navigation Header -->
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="{{ url_for('static', filename='Logo.png') }}" alt="Logo" class="h-10 w-auto mr-2 md:mr-3">
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-primary leading-tight">Advanced Search</h1>
+                        <p class="text-[10px] text-gray-400 hidden md:block">Find specific records</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-1 md:space-x-4">
+                <a href="{{ url_for('auth.home') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Home">
+                    <i class="fas fa-home md:mr-2"></i><span class="hidden lg:inline">Home</span>
+                </a>
+                <a href="{{ url_for('reports.attendance_report') }}"
+                    class="text-gray-700 hover:text-primary px-2 md:px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-200 flex items-center"
+                    title="Reports">
+                    <i class="fas fa-chart-bar md:mr-2"></i><span class="hidden lg:inline">Reports</span>
+                </a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center">
+                    <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Advanced Search</h2>
+        <p class="text-gray-600">Search and filter attendance records with advanced options</p>
+    </div>
+
+    <!-- Search Filters -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-blue-500 rounded-lg p-3 mr-4">
+                <i class="fas fa-filter text-white text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900">Search Filters</h3>
+                <p class="text-sm text-gray-500">Use multiple filters to narrow down results</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Name Search -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-user mr-2 text-primary"></i>Student Name
+                </label>
+                <input type="text" id="nameFilter" placeholder="Search by name..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+            </div>
+
+            <!-- Register Number -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-id-card mr-2 text-primary"></i>Register Number
+                </label>
+                <input type="text" id="regNoFilter" placeholder="Search by register number..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+            </div>
+
+            <!-- Role Filter -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-user-tag mr-2 text-primary"></i>Role
+                </label>
+                <select id="roleFilter"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+                    <option value="">All Roles</option>
+                    <option value="student">Student</option>
+                    <option value="staff">Staff</option>
+                    <option value="hod">HOD</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-check-circle mr-2 text-primary"></i>Status
+                </label>
+                <select id="statusFilter"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+                    <option value="">All Status</option>
+                    <option value="Present">Present</option>
+                    <option value="Absent">Absent</option>
+                    <option value="Late">Late</option>
+                </select>
+            </div>
+
+            <!-- Date From -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-calendar-alt mr-2 text-primary"></i>From Date
+                </label>
+                <input type="date" id="dateFrom"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+            </div>
+
+            <!-- Date To -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-calendar-alt mr-2 text-primary"></i>To Date
+                </label>
+                <input type="date" id="dateTo"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
+            </div>
+        </div>
+
+        <!-- Search Buttons -->
+        <div class="flex items-center space-x-4 mt-6">
+            <button onclick="performSearch()"
+                class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105">
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
+            <button onclick="clearFilters()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200">
+                <i class="fas fa-times mr-2"></i>Clear Filters
+            </button>
+            <button onclick="exportResults()" id="exportBtn"
+                class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200"
+                disabled>
+                <i class="fas fa-download mr-2"></i>Export Results
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div id="searchResults" class="hidden">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-primary to-primary-dark px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-2 mr-3">
+                            <i class="fas fa-list text-white text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white">Search Results</h3>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="resultCount"
+                            class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-white text-sm font-medium">
+                            0 results
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Register No</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Role</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Timestamp</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <!-- Pagination will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="hidden">
+        <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-spinner fa-spin text-blue-500 text-2xl"></i>
+            </div>
+            <p class="text-gray-500 text-lg">Searching...</p>
+            <p class="text-gray-400 text-sm mt-2">Please wait while we find matching records</p>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentPage = 1;
+    let totalPages = 1;
+    let searchParams = {};
+
+    function performSearch(page = 1) {
+        // Collect search parameters
+        searchParams = {
+            name: document.getElementById('nameFilter').value,
+            reg_no: document.getElementById('regNoFilter').value,
+            role: document.getElementById('roleFilter').value,
+            status: document.getElementById('statusFilter').value,
+            date_from: document.getElementById('dateFrom').value,
+            date_to: document.getElementById('dateTo').value,
+            page: page,
+            per_page: 20
+        };
+
+        // Show loading state
+        document.getElementById('loadingState').classList.remove('hidden');
+        document.getElementById('searchResults').classList.add('hidden');
+
+        // Build query string
+        const queryString = new URLSearchParams(searchParams).toString();
+
+        fetch(`/api/search-attendance?${queryString}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                alert('Error performing search: ' + error.message);
+            })
+            .finally(() => {
+                document.getElementById('loadingState').classList.add('hidden');
+            });
+    }
+
+    function displayResults(data) {
+        currentPage = data.page;
+        totalPages = data.total_pages;
+
+        // Update result count
+        document.getElementById('resultCount').textContent = `${data.total_count} results`;
+
+        // Populate results table
+        const tbody = document.getElementById('resultsTableBody');
+        if (data.results.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center">
+                        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-search text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-500 text-lg">No results found</p>
+                        <p class="text-gray-400 text-sm mt-2">Try adjusting your search filters</p>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = data.results.map(result => `
+                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 bg-primary rounded-full flex items-center justify-center mr-3">
+                                <span class="text-white font-medium text-xs">${result.name[0].toUpperCase()}</span>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">${result.name}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">${result.reg_no}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${result.role}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.timestamp}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-1"></i>${result.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update pagination
+        updatePagination();
+
+        // Show results and enable export
+        document.getElementById('searchResults').classList.remove('hidden');
+        document.getElementById('exportBtn').disabled = false;
+    }
+
+    function updatePagination() {
+        const paginationDiv = document.getElementById('pagination');
+
+        if (totalPages <= 1) {
+            paginationDiv.innerHTML = '';
+            return;
+        }
+
+        let paginationHTML = '<div class="flex items-center justify-between">';
+        paginationHTML += '<div class="text-sm text-gray-700">';
+        paginationHTML += `Showing page ${currentPage} of ${totalPages}`;
+        paginationHTML += '</div>';
+
+        paginationHTML += '<div class="flex items-center space-x-2">';
+
+        // Previous button
+        if (currentPage > 1) {
+            paginationHTML += `<button onclick="performSearch(${currentPage - 1})" class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</button>`;
+        }
+
+        // Page numbers
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const isActive = i === currentPage;
+            const buttonClass = isActive ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50';
+            paginationHTML += `<button onclick="performSearch(${i})" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium ${buttonClass}">${i}</button>`;
+        }
+
+        // Next button
+        if (currentPage < totalPages) {
+            paginationHTML += `<button onclick="performSearch(${currentPage + 1})" class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Next</button>`;
+        }
+
+        paginationHTML += '</div></div>';
+        paginationDiv.innerHTML = paginationHTML;
+    }
+
+    function clearFilters() {
+        document.getElementById('nameFilter').value = '';
+        document.getElementById('regNoFilter').value = '';
+        document.getElementById('roleFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+
+        document.getElementById('searchResults').classList.add('hidden');
+        document.getElementById('exportBtn').disabled = true;
+    }
+
+    function exportResults() {
+        if (Object.keys(searchParams).length === 0) {
+            alert('Please perform a search first');
+            return;
+        }
+
+        // Remove pagination parameters for export
+        const exportParams = { ...searchParams };
+        delete exportParams.page;
+        delete exportParams.per_page;
+
+        const queryString = new URLSearchParams(exportParams).toString();
+        window.open(`/api/export-search?${queryString}`, '_blank');
+    }
+
+    // Auto-search on Enter key
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = ['nameFilter', 'regNoFilter'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
